@@ -1,12 +1,11 @@
 // Thin fetch wrapper. Same-origin in production; Vite proxies /api in dev.
-// All requests carry cookies for auth.
+// Open access — no cookies, no auth headers, no credentials.
 
 const BASE = import.meta.env.VITE_API_BASE || "";
 
 async function request(method, path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method,
-    credentials: "include",
     headers: body ? { "content-type": "application/json" } : {},
     body: body ? JSON.stringify(body) : undefined
   });
@@ -26,14 +25,6 @@ export const api = {
   post: (path, body) => request("POST", path, body),
   patch: (path, body) => request("PATCH", path, body),
   del: (path) => request("DELETE", path)
-};
-
-// ----- Auth -----
-export const auth = {
-  me: () => api.get("/api/auth/me"),
-  login: (email, password) => api.post("/api/auth/login", { email, password }),
-  register: (email, password, name) => api.post("/api/auth/register", { email, password, name }),
-  logout: () => api.post("/api/auth/logout")
 };
 
 // ----- State (full snapshot for load + JSON import) -----

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth, settings } from "../lib/api.js";
+import { settings } from "../lib/api.js";
 
 function daysUntil(date) {
   if (!date) return null;
@@ -15,7 +15,7 @@ function taskProgress(tasks, cat) {
   return { done, total: list.length, pct: list.length ? Math.round((done / list.length) * 100) : 0 };
 }
 
-export default function Hero({ user, data, onSignedOut, onRefresh }) {
+export default function Hero({ data, onRefresh }) {
   const [van, setVan] = useState(data.weddingDates.van || "");
   const [col, setCol] = useState(data.weddingDates.col || "");
 
@@ -35,21 +35,12 @@ export default function Hero({ user, data, onSignedOut, onRefresh }) {
   const totalAll = van_.total + col_.total + shared_.total;
   const totalPct = totalAll ? Math.round((totalDone / totalAll) * 100) : 0;
 
-  async function signOut() {
-    await auth.logout();
-    onSignedOut();
-  }
-
   return (
     <header className="hero">
       <div className="hero-inner">
-        <div className="hero-user">
-          <span className="who">Signed in as {user.name} · {user.email}</span>
-          <button type="button" onClick={signOut}>Sign out</button>
-        </div>
         <div className="eyebrow">Vancouver &amp; Colombia · Full Planner</div>
         <h1>Dos Bodas,<br /><em>Una Historia</em></h1>
-        <p className="sub">One marriage, two ceremonies. Every task, guest, vendor, gift, and color swatch for both weddings — in one place, editable by everyone signed in.</p>
+        <p className="sub">One marriage, two ceremonies. Every task, guest, vendor, gift, and color swatch for both weddings — in one place.</p>
 
         <div className="dates-row">
           <div className="date-field">

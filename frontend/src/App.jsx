@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { auth, state } from "./lib/api.js";
-import AuthGate from "./components/AuthGate.jsx";
+import { state } from "./lib/api.js";
 import Hero from "./components/Hero.jsx";
 import Tabs from "./components/Tabs.jsx";
 import Overview from "./panels/Overview.jsx";
@@ -33,7 +32,6 @@ const EMPTY = {
 };
 
 export default function App() {
-  const [user, setUser] = useState(undefined); // undefined = loading, null = signed out
   const [tab, setTab] = useState("overview");
   const [data, setData] = useState(EMPTY);
 
@@ -52,15 +50,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    auth.me().then((r) => setUser(r.user)).catch(() => setUser(null));
-  }, []);
-
-  useEffect(() => {
-    if (user) refresh().catch((e) => console.error("snapshot failed", e));
-  }, [user, refresh]);
-
-  if (user === undefined) return null;
-  if (!user) return <AuthGate onSignedIn={setUser} />;
+    refresh().catch((e) => console.error("snapshot failed", e));
+  }, [refresh]);
 
   const panels = {
     overview: <Overview data={data} onRefresh={refresh} />,
@@ -77,7 +68,7 @@ export default function App() {
 
   return (
     <>
-      <Hero user={user} data={data} onSignedOut={() => setUser(null)} onRefresh={refresh} />
+      <Hero data={data} onRefresh={refresh} />
       <div className="wrap">
         <Tabs tabs={TABS} active={tab} onChange={setTab} />
         <main>

@@ -1,10 +1,9 @@
 // Cloudflare Worker entry point. Node ESM, no TypeScript.
-// Router pattern: match method+path, dispatch to a handler. No framework.
+// Open-access — no auth. Every route is public. Audit log still records
+// changes (with a null user), so we keep a history of edits regardless.
 
 import { json, error, withCors, corsHeaders } from "./lib/http.js";
 import { logger } from "./lib/dd.js";
-import { currentUser, requireAuth } from "./middleware/auth.js";
-import * as Auth from "./routes/auth.js";
 import * as Tasks from "./routes/tasks.js";
 import * as Guests from "./routes/guests.js";
 import * as Vendors from "./routes/vendors.js";
@@ -15,7 +14,9 @@ import * as Settings from "./routes/settings.js";
 import * as State from "./routes/state.js";
 import * as Activity from "./routes/activity.js";
 
-const PUBLIC = new Set(["POST /api/auth/register", "POST /api/auth/login", "GET /api/auth/me", "POST /api/auth/logout", "GET /api/health"]);
+// Every write is attributed to this stand-in "user" so audit entries have
+// a value to filter on. Not used for authorization — routes are open.
+const ANON = { id: null, email: "anonymous" };
 
 function idFromPath(path, prefix) {
   const rest = path.slice(prefix.length);
@@ -28,18 +29,9 @@ async function route(env, request) {
   const path = url.pathname;
   const method = request.method;
   const key = `${method} ${path}`;
+  const user = ANON;
 
   if (path === "/api/health") return json({ ok: true, ts: new Date().toISOString() });
-
-  // Auth endpoints
-  if (key === "POST /api/auth/register") return Auth.register(env, request);
-  if (key === "POST /api/auth/login") return Auth.login(env, request);
-  if (key === "POST /api/auth/logout") return Auth.logout(env, request);
-  if (key === "GET /api/auth/me") return Auth.me(env, request);
-
-  // Everything below requires a session.
-  const user = await currentUser(env, request);
-  if (!PUBLIC.has(key)) requireAuth(user);
 
   // Tasks
   if (key === "GET /api/tasks") return Tasks.list(env, request, user, url);
@@ -125,7 +117,6 @@ export default {
     const start = Date.now();
     const url = new URL(request.url);
 
-    // CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(env, request) });
     }
@@ -134,15 +125,10 @@ export default {
     try {
       response = await route(env, request);
     } catch (err) {
-      if (err.status === 401) {
-        response = error(401, "unauthorized");
-      } else {
-        log.error("unhandled error", { path: url.pathname, err: String(err), stack: err.stack });
-        response = error(500, "internal error");
-      }
+      log.error("unhandled error", { path: url.pathname, err: String(err), stack: err.stack });
+      response = error(500, "internal error");
     }
 
-    // Fire-and-forget access log (Datadog when key set, console otherwise).
     ctx.waitUntil(
       log.info("request", {
         method: request.method,
