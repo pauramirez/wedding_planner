@@ -15,12 +15,14 @@ export function parseCookies(request) {
 }
 
 export function sessionCookie(id, { clear = false } = {}) {
+  // Same-origin (Worker serves both API + SPA), so Lax is safe and stricter
+  // than None. HttpOnly stops XSS from reading it; Secure requires HTTPS.
   const attrs = [
     `${COOKIE_NAME}=${clear ? "" : id}`,
     "Path=/",
     "HttpOnly",
     "Secure",
-    "SameSite=None",
+    "SameSite=Lax",
     clear ? "Max-Age=0" : `Max-Age=${SESSION_TTL_DAYS * 24 * 60 * 60}`
   ];
   return attrs.join("; ");

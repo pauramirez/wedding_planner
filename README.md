@@ -4,8 +4,8 @@ Multi-user wedding planner for a two-ceremony wedding (Vancouver civil + Colombi
 
 ## Stack
 
-- **Frontend:** React (JSX) + Vite, deployed on **Cloudflare Pages**
-- **Backend:** Cloudflare Workers (Node ESM, `nodejs_compat`)
+- **Frontend:** React (JSX) + Vite, bundled as static assets served by the Worker
+- **Backend:** Cloudflare Workers (Node ESM, `nodejs_compat`) — serves both `/api/*` and the SPA on one origin (single URL, first-party cookies)
 - **Database:** Cloudflare D1 (SQLite at the edge) — raw SQL, no ORM, versioned migrations
 - **Observability:** Datadog RUM (frontend) + Workers Logpush → Datadog (backend)
 - **CI:** GitHub Actions
