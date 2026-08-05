@@ -1,4 +1,4 @@
-# Wedding Planner — Dos Bodas, Una Historia
+# Wedding Planner
 
 Multi-user wedding planner for a two-ceremony wedding (Vancouver civil + Colombia catholic). Shared data — every logged-in user sees the same wedding, with an audit trail of who changed what.
 
