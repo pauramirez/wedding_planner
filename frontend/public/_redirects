@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects file.
+# Status 200 = server-side proxy (URL in browser stays on the Pages origin).
+# This is what makes /api/* look same-origin so the session cookie works.
+/api/*  https://weddingplanner.paujrg95.workers.dev/api/:splat  200
