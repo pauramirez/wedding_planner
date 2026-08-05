@@ -1,4 +1,4 @@
-name = "wedding-planner-api"
+name = "weddingplanner"
 main = "src/index.js"
 compatibility_date = "2025-01-15"
 compatibility_flags = ["nodejs_compat"]
@@ -8,16 +8,16 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "wedding-planner"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "d4f4e25f-1035-4014-8807-02f70e852954"
 migrations_dir = "../db/migrations"
 
 # Non-secret vars go here. Secrets (SESSION_SECRET, DD_API_KEY) are set with:
 #   wrangler secret put SESSION_SECRET
 [vars]
 DD_SITE = "datadoghq.com"
-DD_SERVICE = "wedding-planner-api"
+DD_SERVICE = "weddingplanner"
 DD_ENV = "production"
-FRONTEND_ORIGIN = "https://wedding-planner.pages.dev"
+FRONTEND_ORIGIN = "https://wedding-planner-5bd.pages.dev"
 
 [env.dev.vars]
 DD_ENV = "dev"
