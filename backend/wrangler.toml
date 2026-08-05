@@ -1,0 +1,24 @@
+name = "wedding-planner-api"
+main = "src/index.js"
+compatibility_date = "2025-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 binding — the database is created via `wrangler d1 create wedding-planner`.
+# Paste the database_id it prints below (and in the GH secret CF_D1_DATABASE_ID).
+[[d1_databases]]
+binding = "DB"
+database_name = "wedding-planner"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "../db/migrations"
+
+# Non-secret vars go here. Secrets (SESSION_SECRET, DD_API_KEY) are set with:
+#   wrangler secret put SESSION_SECRET
+[vars]
+DD_SITE = "datadoghq.com"
+DD_SERVICE = "wedding-planner-api"
+DD_ENV = "production"
+FRONTEND_ORIGIN = "https://wedding-planner.pages.dev"
+
+[env.dev.vars]
+DD_ENV = "dev"
+FRONTEND_ORIGIN = "http://localhost:5173"

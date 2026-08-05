@@ -1,0 +1,91 @@
+import { useEffect, useState, useCallback } from "react";
+import { auth, state } from "./lib/api.js";
+import AuthGate from "./components/AuthGate.jsx";
+import Hero from "./components/Hero.jsx";
+import Tabs from "./components/Tabs.jsx";
+import Overview from "./panels/Overview.jsx";
+import TasksPanel from "./panels/TasksPanel.jsx";
+import GuestsPanel from "./panels/GuestsPanel.jsx";
+import VendorsPanel from "./panels/VendorsPanel.jsx";
+import GiftsPanel from "./panels/GiftsPanel.jsx";
+import PalettePanel from "./panels/PalettePanel.jsx";
+import TimelinePanel from "./panels/TimelinePanel.jsx";
+import BudgetPanel from "./panels/BudgetPanel.jsx";
+import Toolbar from "./components/Toolbar.jsx";
+
+const TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "vancouver", label: "🇨🇦 Vancouver" },
+  { id: "colombia", label: "🇨🇴 Colombia" },
+  { id: "shared", label: "Both Weddings" },
+  { id: "guests", label: "Guest List" },
+  { id: "vendors", label: "Vendors" },
+  { id: "gifts", label: "Gifts" },
+  { id: "colors", label: "Color Palette" },
+  { id: "timeline", label: "Day-of Timeline" },
+  { id: "budget", label: "Budget" }
+];
+
+const EMPTY = {
+  tasks: [], guests: [], vendors: [], gifts: [], palette: [],
+  timelineVan: [], timelineCol: [],
+  weddingDates: { van: "", col: "" }
+};
+
+export default function App() {
+  const [user, setUser] = useState(undefined); // undefined = loading, null = signed out
+  const [tab, setTab] = useState("overview");
+  const [data, setData] = useState(EMPTY);
+
+  const refresh = useCallback(async () => {
+    const snap = await state.snapshot();
+    setData({
+      tasks: snap.tasks || [],
+      guests: snap.guests || [],
+      vendors: snap.vendors || [],
+      gifts: snap.gifts || [],
+      palette: snap.palette || [],
+      timelineVan: snap.timelineVan || [],
+      timelineCol: snap.timelineCol || [],
+      weddingDates: snap.weddingDates || { van: "", col: "" }
+    });
+  }, []);
+
+  useEffect(() => {
+    auth.me().then((r) => setUser(r.user)).catch(() => setUser(null));
+  }, []);
+
+  useEffect(() => {
+    if (user) refresh().catch((e) => console.error("snapshot failed", e));
+  }, [user, refresh]);
+
+  if (user === undefined) return null;
+  if (!user) return <AuthGate onSignedIn={setUser} />;
+
+  const panels = {
+    overview: <Overview data={data} onRefresh={refresh} />,
+    vancouver: <TasksPanel cat="vancouver" title="Vancouver Civil Wedding — Tasks" dotClass="van" tasks={data.tasks} onRefresh={refresh} />,
+    colombia: <TasksPanel cat="colombia" title="Colombia Catholic Wedding — Tasks" dotClass="col" tasks={data.tasks} onRefresh={refresh} />,
+    shared: <TasksPanel cat="shared" title="Both Weddings — Tasks" dotClass="shared" tasks={data.tasks} onRefresh={refresh} />,
+    guests: <GuestsPanel guests={data.guests} onRefresh={refresh} />,
+    vendors: <VendorsPanel vendors={data.vendors} onRefresh={refresh} />,
+    gifts: <GiftsPanel gifts={data.gifts} onRefresh={refresh} />,
+    colors: <PalettePanel palette={data.palette} onRefresh={refresh} />,
+    timeline: <TimelinePanel timelineVan={data.timelineVan} timelineCol={data.timelineCol} onRefresh={refresh} />,
+    budget: <BudgetPanel data={data} />
+  };
+
+  return (
+    <>
+      <Hero user={user} data={data} onSignedOut={() => setUser(null)} onRefresh={refresh} />
+      <div className="wrap">
+        <Tabs tabs={TABS} active={tab} onChange={setTab} />
+        <main>
+          {panels[tab]}
+          <Toolbar data={data} onRefresh={refresh} />
+        </main>
+        <footer>Made with love — for the two of you.</footer>
+      </div>
+    </>
+  );
+}

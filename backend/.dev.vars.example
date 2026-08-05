@@ -1,0 +1,6 @@
+SESSION_SECRET=change-me-locally
+DD_API_KEY=
+DD_SITE=datadoghq.com
+DD_SERVICE=wedding-planner-api
+DD_ENV=dev
+FRONTEND_ORIGIN=http://localhost:5173
