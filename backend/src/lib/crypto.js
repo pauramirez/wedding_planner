@@ -1,7 +1,11 @@
 // PBKDF2 password hashing via the Web Crypto API — works in Workers with no deps.
 // Format stored in DB: "pbkdf2$<iters>$<b64salt>$<b64hash>"
 
-const ITERATIONS = 210000;
+// Cloudflare Workers' Web Crypto caps PBKDF2 at 100k iterations. This is
+// the maximum defense-in-depth we can get with the built-in API; going higher
+// would require an Argon2 WASM build. 100k SHA-256 is still enough to make
+// offline cracking meaningfully expensive per candidate.
+const ITERATIONS = 100000;
 const KEY_LEN_BITS = 256;
 
 function b64(buf) {
