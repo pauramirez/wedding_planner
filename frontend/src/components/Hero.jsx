@@ -39,7 +39,7 @@ export default function Hero({ data, onRefresh }) {
     <header className="hero">
       <div className="hero-inner">
         <div className="eyebrow">Vancouver &amp; Colombia · Full Planner</div>
-        <h1>Dos Bodas,<br /><em>Una Historia</em></h1>
+        <h1>Our <em>Wedding</em><br />Planner</h1>
         <p className="sub">One marriage, two ceremonies. Every task, guest, vendor, gift, and color swatch for both weddings — in one place.</p>
 
         <div className="dates-row">
