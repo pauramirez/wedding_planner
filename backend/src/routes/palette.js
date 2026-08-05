@@ -26,3 +26,21 @@ export async function remove(env, request, user, id) {
   await record(env, user, "delete", "color", id, before, null);
   return ok();
 }
+
+export async function reorder(env, request, user) {
+  const body = await readJson(request);
+  if (!body || !Array.isArray(body.ids)) return error(400, "ids array required");
+  // Validate: only positive integers, no duplicates.
+  const ids = [];
+  const seen = new Set();
+  for (const raw of body.ids) {
+    const n = Number(raw);
+    if (!Number.isInteger(n) || n <= 0) return error(400, "ids must be positive integers");
+    if (seen.has(n)) return error(400, "duplicate id in ids");
+    seen.add(n);
+    ids.push(n);
+  }
+  const next = await Palette.reorder(env, ids);
+  await record(env, user, "update", "palette_order", null, null, { ids });
+  return json({ palette: next });
+}

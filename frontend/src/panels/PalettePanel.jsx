@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { palette as paletteApi } from "../lib/api.js";
 import { shadesFor, isValidHex } from "../lib/color.js";
 
@@ -6,10 +6,14 @@ export default function PalettePanel({ palette, onRefresh }) {
   const [hex, setHex] = useState("#B5502F");
   const [name, setName] = useState("");
   const [shades, setShades] = useState([]);
+  // Local copy of the ordering so drag feels instant. Server confirms after drop.
+  const [order, setOrder] = useState(palette);
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
 
-  function updateHex(v) {
-    setHex(v.toUpperCase());
-  }
+  useEffect(() => { setOrder(palette); }, [palette]);
+
+  function updateHex(v) { setHex(v.toUpperCase()); }
 
   async function add() {
     if (!isValidHex(hex)) return alert("Enter a valid hex like #B5502F");
@@ -33,12 +37,58 @@ export default function PalettePanel({ palette, onRefresh }) {
     onRefresh();
   }
 
+  function onDragStart(e, id) {
+    setDragId(id);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(id));
+  }
+
+  function onDragOver(e, id) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (overId !== id) setOverId(id);
+  }
+
+  function onDragLeave(id) {
+    if (overId === id) setOverId(null);
+  }
+
+  async function onDrop(e, targetId) {
+    e.preventDefault();
+    const srcId = dragId ?? Number(e.dataTransfer.getData("text/plain"));
+    setDragId(null);
+    setOverId(null);
+    if (!srcId || srcId === targetId) return;
+
+    const srcIdx = order.findIndex((c) => c.id === srcId);
+    const dstIdx = order.findIndex((c) => c.id === targetId);
+    if (srcIdx < 0 || dstIdx < 0) return;
+
+    const next = [...order];
+    const [moved] = next.splice(srcIdx, 1);
+    next.splice(dstIdx, 0, moved);
+    setOrder(next);
+
+    try {
+      await paletteApi.reorder(next.map((c) => c.id));
+      onRefresh();
+    } catch {
+      // On failure, revert to server truth.
+      onRefresh();
+    }
+  }
+
+  function onDragEnd() {
+    setDragId(null);
+    setOverId(null);
+  }
+
   return (
     <section className="panel">
       <div className="panel-head">
         <div>
           <h2>Color Palette</h2>
-          <p className="desc">Pick a color, preview it, generate shades, and build your wedding palette.</p>
+          <p className="desc">Pick a color, preview it, generate shades, and build your wedding palette. Drag any swatch to rearrange.</p>
         </div>
       </div>
       <div className="color-lab">
@@ -67,11 +117,20 @@ export default function PalettePanel({ palette, onRefresh }) {
         </div>
         <div className="palette-area">
           <h3>Your palette</h3>
-          <p>Click any swatch to load it back into the picker. Use "copy" to grab the hex code for invitations, florists, or your stationer.</p>
+          <p>Click any swatch to load it into the picker. Drag to reorder. Use "copy" to grab the hex code.</p>
           <div className="swatch-grid">
-            {palette.length === 0 && <div className="empty-palette">No colors saved yet — pick one and add it to your palette</div>}
-            {palette.map((c) => (
-              <div key={c.id} className="swatch-chip">
+            {order.length === 0 && <div className="empty-palette">No colors saved yet — pick one and add it to your palette</div>}
+            {order.map((c) => (
+              <div
+                key={c.id}
+                className={`swatch-chip ${dragId === c.id ? "dragging" : ""} ${overId === c.id && dragId !== c.id ? "drag-over" : ""}`}
+                draggable
+                onDragStart={(e) => onDragStart(e, c.id)}
+                onDragOver={(e) => onDragOver(e, c.id)}
+                onDragLeave={() => onDragLeave(c.id)}
+                onDrop={(e) => onDrop(e, c.id)}
+                onDragEnd={onDragEnd}
+              >
                 <div className="fill" style={{ background: c.hex }} onClick={() => updateHex(c.hex)} />
                 <div className="info">
                   <div className="hexcode">{c.hex}</div>

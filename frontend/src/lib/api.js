@@ -57,7 +57,8 @@ export const gifts = {
 };
 export const palette = {
   create: (c) => api.post("/api/palette", c),
-  remove: (id) => api.del(`/api/palette/${id}`)
+  remove: (id) => api.del(`/api/palette/${id}`),
+  reorder: (ids) => api.patch("/api/palette/reorder", { ids })
 };
 export const timeline = {
   create: (t) => api.post("/api/timeline", t),

@@ -84,6 +84,7 @@ async function route(env, request) {
   // Palette
   if (key === "GET /api/palette") return Palette.list(env);
   if (key === "POST /api/palette") return Palette.create(env, request, user);
+  if (key === "PATCH /api/palette/reorder") return Palette.reorder(env, request, user);
   if (method === "DELETE" && path.startsWith("/api/palette/")) {
     const id = idFromPath(path, "/api/palette/");
     return id ? Palette.remove(env, request, user, id) : error(400, "bad id");
