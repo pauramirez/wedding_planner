@@ -147,7 +147,51 @@ input.notes-input:focus{outline:1px solid var(--gold);background:var(--paper);}
 #fileInput{display:none;}
 footer{text-align:center;padding:26px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A8A196;}
 
-/* AUTH page */
+/* QR button in guest rows */
+.qr-btn{font-family:'IBM Plex Mono',monospace;font-size:10.5px;background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:4px 9px;cursor:pointer;color:var(--charcoal);margin-right:6px;letter-spacing:.05em;}
+.qr-btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.qr-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* MODAL — used for the per-guest QR */
+.modal-backdrop{position:fixed;inset:0;background:rgba(27,42,61,.72);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;animation:fadeIn .18s ease;}
+.modal-card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:24px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3);}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-head h3{font-family:'Fraunces',serif;font-size:20px;margin:0;color:var(--ink);}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);line-height:1;padding:0 4px;}
+.modal-close:hover{color:var(--charcoal);}
+.qr-canvas{display:block;margin:0 auto 14px;border-radius:4px;background:var(--white);padding:8px;}
+.modal-link{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);word-break:break-all;background:var(--white);border:1px solid var(--line);border-radius:3px;padding:8px;margin-bottom:14px;}
+.modal-actions{display:flex;gap:8px;margin-bottom:14px;}
+.modal-actions button{flex:1;padding:9px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;border-radius:3px;cursor:pointer;}
+.modal-actions .primary{background:var(--ink);color:var(--paper);border:none;}
+.modal-actions .primary:hover{background:#2a4157;}
+.modal-actions .secondary{background:var(--white);color:var(--charcoal);border:1px solid var(--line);}
+.modal-actions .secondary:hover{background:var(--paper-2);}
+.modal-card .hint{font-size:11.5px;color:var(--muted);margin:0;line-height:1.5;}
+.modal-card .err{color:var(--clay);font-size:13px;padding:20px;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* RSVP public page */
+.rsvp-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,var(--paper) 0%,var(--paper-2) 100%);}
+.rsvp-card{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:44px;max-width:500px;width:100%;box-shadow:0 8px 30px rgba(27,42,61,.06);}
+.rsvp-card .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.rsvp-card h1{font-family:'Fraunces',serif;font-weight:600;font-size:36px;line-height:1.1;margin:0 0 14px;color:var(--ink);}
+.rsvp-card h1 em{font-style:italic;font-weight:500;color:var(--clay);}
+.rsvp-card p.sub{color:var(--charcoal);font-size:15px;line-height:1.55;margin:0 0 26px;}
+.rsvp-card p.hint{font-size:12.5px;color:var(--muted);margin-top:20px;line-height:1.5;}
+.rsvp-choices{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.rsvp-choice{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--paper);border:1.5px solid var(--line);border-radius:4px;cursor:pointer;font-size:14.5px;transition:all .15s ease;}
+.rsvp-choice:hover{border-color:var(--charcoal);}
+.rsvp-choice input{margin:0;}
+.rsvp-choice.chosen.yes{border-color:var(--done);background:rgba(92,138,106,.08);color:var(--done);font-weight:600;}
+.rsvp-choice.chosen.no{border-color:var(--clay);background:rgba(181,80,47,.08);color:var(--clay);font-weight:600;}
+.rsvp-card .fld{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:6px 0 6px;}
+.rsvp-card input[type=text]{width:100%;font-family:'Inter',sans-serif;font-size:14px;padding:11px 12px;border:1px solid var(--line);border-radius:3px;background:var(--paper);margin-bottom:14px;}
+.rsvp-card button.primary{width:100%;background:var(--ink);color:var(--paper);border:none;border-radius:3px;padding:14px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;margin-top:6px;letter-spacing:.03em;}
+.rsvp-card button.primary:hover:not(:disabled){background:#2a4157;}
+.rsvp-card button.primary:disabled{opacity:.4;cursor:not-allowed;}
+
+/* AUTH page (legacy — auth removed but styles kept for now) */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,var(--ink) 0%,#23394f 100%);}
 .auth-card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:36px;max-width:400px;width:100%;}
 .auth-card h1{font-family:'Fraunces',serif;font-size:28px;margin:0 0 6px;color:var(--ink);}

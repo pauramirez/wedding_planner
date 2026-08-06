@@ -1,27 +1,26 @@
 import { all, one, run } from "../lib/db.js";
+import { randomHexToken } from "../lib/tokens.js";
+
+const GUEST_COLUMNS = `id, name, side, event, plus_one AS plusOne, table_num AS "table", contact, rsvp, meal, rsvp_token AS rsvpToken`;
 
 export async function listAll(env) {
-  return all(
-    env,
-    `SELECT id, name, side, event, plus_one AS plusOne, table_num AS "table", contact, rsvp, meal
-       FROM guests ORDER BY id ASC`
-  );
+  return all(env, `SELECT ${GUEST_COLUMNS} FROM guests ORDER BY id ASC`);
 }
 
 export async function getById(env, id) {
-  return one(
-    env,
-    `SELECT id, name, side, event, plus_one AS plusOne, table_num AS "table", contact, rsvp, meal
-       FROM guests WHERE id = ?`,
-    [id]
-  );
+  return one(env, `SELECT ${GUEST_COLUMNS} FROM guests WHERE id = ?`, [id]);
+}
+
+export async function findByToken(env, token) {
+  return one(env, `SELECT ${GUEST_COLUMNS} FROM guests WHERE rsvp_token = ?`, [token]);
 }
 
 export async function create(env, g) {
+  const token = randomHexToken();
   const res = await run(
     env,
-    `INSERT INTO guests (name, side, event, plus_one, table_num, contact, rsvp, meal)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO guests (name, side, event, plus_one, table_num, contact, rsvp, meal, rsvp_token)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       g.name,
       g.side || "Both",
@@ -30,7 +29,8 @@ export async function create(env, g) {
       g.table || null,
       g.contact || null,
       g.rsvp || "pending",
-      g.meal || null
+      g.meal || null,
+      token
     ]
   );
   return getById(env, res.lastRowId);
@@ -55,6 +55,21 @@ export async function update(env, id, patch) {
     [next.name, next.side, next.event, next.plusOne, next.table, next.contact, next.rsvp, next.meal, id]
   );
   return getById(env, id);
+}
+
+export async function updateByToken(env, token, patch) {
+  const current = await findByToken(env, token);
+  if (!current) return null;
+  const next = {
+    rsvp: patch.rsvp ?? current.rsvp,
+    meal: patch.meal ?? current.meal
+  };
+  await run(
+    env,
+    `UPDATE guests SET rsvp=?, meal=?, updated_at=CURRENT_TIMESTAMP WHERE rsvp_token=?`,
+    [next.rsvp, next.meal, token]
+  );
+  return findByToken(env, token);
 }
 
 export async function remove(env, id) {

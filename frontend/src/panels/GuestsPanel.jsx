@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { guests as guestsApi } from "../lib/api.js";
 import StatusSelect from "../components/StatusSelect.jsx";
+import QrModal from "../components/QrModal.jsx";
 
 const RSVP_OPTS = [
   { value: "pending", label: "Pending" },
@@ -10,6 +11,7 @@ const RSVP_OPTS = [
 
 export default function GuestsPanel({ guests, onRefresh }) {
   const [form, setForm] = useState({ name: "", side: "Bride's side", event: "Colombia", plusOne: "No", table: "", contact: "" });
+  const [qrGuest, setQrGuest] = useState(null);
 
   async function add(e) {
     e.preventDefault();
@@ -59,14 +61,15 @@ export default function GuestsPanel({ guests, onRefresh }) {
         </tr></thead>
         <tbody>
           {guests.length === 0 && <tr className="empty-row"><td colSpan={9}>No guests yet — add your first above</td></tr>}
-          {guests.map((g) => <GuestRow key={g.id} guest={g} onRefresh={onRefresh} />)}
+          {guests.map((g) => <GuestRow key={g.id} guest={g} onRefresh={onRefresh} onShowQr={() => setQrGuest(g)} />)}
         </tbody>
       </table>
+      {qrGuest && <QrModal guest={qrGuest} onClose={() => setQrGuest(null)} />}
     </section>
   );
 }
 
-function GuestRow({ guest, onRefresh }) {
+function GuestRow({ guest, onRefresh, onShowQr }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(guest);
 
@@ -122,6 +125,7 @@ function GuestRow({ guest, onRefresh }) {
       </td>
       <td>{guest.contact || "—"}</td>
       <td className="row-actions">
+        <button className="qr-btn" onClick={onShowQr} title="Show RSVP QR code" disabled={!guest.rsvpToken}>QR</button>
         <button className="edit-btn" onClick={() => setEditing(true)}>✎ Edit</button>
         <button className="del-btn" onClick={remove}>✕</button>
       </td>

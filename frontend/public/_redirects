@@ -1,0 +1,4 @@
+# SPA fallback: any path Pages doesn't recognize serves index.html so the
+# React app can pick up the route (e.g. /rsvp/<token>). This is a same-origin
+# rewrite (both are on the Pages domain) — no third-party proxying involved.
+/*  /index.html  200

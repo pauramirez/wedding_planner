@@ -13,6 +13,9 @@ import * as Timeline from "./routes/timeline.js";
 import * as Settings from "./routes/settings.js";
 import * as State from "./routes/state.js";
 import * as Activity from "./routes/activity.js";
+import * as Rsvp from "./routes/rsvp.js";
+
+const RSVP_TOKEN_RE = /^[a-f0-9]{32}$/;
 
 // Every write is attributed to this stand-in "user" so audit entries have
 // a value to filter on. Not used for authorization — routes are open.
@@ -32,6 +35,15 @@ async function route(env, request) {
   const user = ANON;
 
   if (path === "/api/health") return json({ ok: true, ts: new Date().toISOString() });
+
+  // RSVP — public, authenticated by the token in the URL.
+  if (path.startsWith("/api/rsvp/")) {
+    const token = path.slice("/api/rsvp/".length);
+    if (!RSVP_TOKEN_RE.test(token)) return error(400, "invalid token format");
+    if (method === "GET") return Rsvp.get(env, token);
+    if (method === "POST") return Rsvp.update(env, request, token);
+    return error(405, "method not allowed");
+  }
 
   // Tasks
   if (key === "GET /api/tasks") return Tasks.list(env, request, user, url);
