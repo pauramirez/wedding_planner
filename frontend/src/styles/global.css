@@ -147,6 +147,22 @@ input.notes-input:focus{outline:1px solid var(--gold);background:var(--paper);}
 #fileInput{display:none;}
 footer{text-align:center;padding:26px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A8A196;}
 
+/* Panel-head action button */
+.head-btn{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--white);border:1px solid var(--charcoal);border-radius:3px;padding:9px 14px;cursor:pointer;color:var(--charcoal);letter-spacing:.03em;white-space:nowrap;}
+.head-btn:hover{background:var(--ink);color:var(--paper);}
+
+/* Modal size + divider used by the Master QR modal */
+.modal-wide{max-width:420px;}
+.modal-divider{border:none;border-top:1px solid var(--line);margin:20px 0 16px;}
+
+/* Small status pills */
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+.pill.ok{background:rgba(92,138,106,.15);color:var(--done);}
+.pill.warn{background:rgba(181,80,47,.15);color:var(--clay);}
+
+/* RSVP lookup error line */
+.rsvp-err{color:var(--clay);font-size:13px;text-align:center;margin-top:14px;}
+
 /* QR button in guest rows */
 .qr-btn{font-family:'IBM Plex Mono',monospace;font-size:10.5px;background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:4px 9px;cursor:pointer;color:var(--charcoal);margin-right:6px;letter-spacing:.05em;}
 .qr-btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}

@@ -15,6 +15,15 @@ export async function findByToken(env, token) {
   return one(env, `SELECT ${GUEST_COLUMNS} FROM guests WHERE rsvp_token = ?`, [token]);
 }
 
+// Case-insensitive, whitespace-tolerant name lookup for the shared-QR flow.
+export async function findByName(env, name) {
+  return one(
+    env,
+    `SELECT ${GUEST_COLUMNS} FROM guests WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))`,
+    [name]
+  );
+}
+
 export async function create(env, g) {
   const token = randomHexToken();
   const res = await run(

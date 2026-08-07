@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { state } from "./lib/api.js";
 import RsvpPage from "./pages/RsvpPage.jsx";
+import RsvpLookup from "./pages/RsvpLookup.jsx";
 import Hero from "./components/Hero.jsx";
 import Tabs from "./components/Tabs.jsx";
 import Overview from "./panels/Overview.jsx";
@@ -38,8 +39,12 @@ const EMPTY = {
 const RSVP_MATCH = /^\/rsvp\/([a-f0-9]{32})\/?$/;
 
 export default function App() {
-  const rsvpMatch = typeof window !== "undefined" && window.location.pathname.match(RSVP_MATCH);
-  if (rsvpMatch) return <RsvpPage token={rsvpMatch[1]} />;
+  if (typeof window !== "undefined") {
+    const path = window.location.pathname;
+    const rsvpMatch = path.match(RSVP_MATCH);
+    if (rsvpMatch) return <RsvpPage token={rsvpMatch[1]} />;
+    if (path === "/rsvp" || path === "/rsvp/") return <RsvpLookup />;
+  }
   return <Planner />;
 }
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { guests as guestsApi } from "../lib/api.js";
 import StatusSelect from "../components/StatusSelect.jsx";
 import QrModal from "../components/QrModal.jsx";
+import MasterQrModal from "../components/MasterQrModal.jsx";
 
 const RSVP_OPTS = [
   { value: "pending", label: "Pending" },
@@ -12,6 +13,7 @@ const RSVP_OPTS = [
 export default function GuestsPanel({ guests, onRefresh }) {
   const [form, setForm] = useState({ name: "", side: "Bride's side", event: "Colombia", plusOne: "No", table: "", contact: "" });
   const [qrGuest, setQrGuest] = useState(null);
+  const [showMasterQr, setShowMasterQr] = useState(false);
 
   async function add(e) {
     e.preventDefault();
@@ -33,6 +35,9 @@ export default function GuestsPanel({ guests, onRefresh }) {
           <h2>Guest List</h2>
           <p className="desc">Track invitees for either wedding — RSVP, meal choice, plus-ones and table assignment.</p>
         </div>
+        <button className="head-btn" onClick={() => setShowMasterQr(true)} title="Print one QR for all invitations">
+          🔲 Master RSVP QR
+        </button>
       </div>
       <div className="summary-row">
         <Summary label="Total invited" value={total} />
@@ -65,6 +70,7 @@ export default function GuestsPanel({ guests, onRefresh }) {
         </tbody>
       </table>
       {qrGuest && <QrModal guest={qrGuest} onClose={() => setQrGuest(null)} />}
+      {showMasterQr && <MasterQrModal onClose={() => setShowMasterQr(false)} />}
     </section>
   );
 }

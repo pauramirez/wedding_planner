@@ -2,10 +2,17 @@ import { json, error, readJson } from "../lib/http.js";
 import { record } from "../lib/audit.js";
 import * as Settings from "../models/settings.js";
 
-const ALLOWED_KEYS = new Set(["wedding_date_van", "wedding_date_col"]);
+const ALLOWED_KEYS = new Set(["wedding_date_van", "wedding_date_col", "rsvp_secret"]);
 
 export async function list(env) {
-  return json({ settings: await Settings.getAll(env) });
+  // Do not leak the RSVP secret in any read endpoint. Expose only whether
+  // one is set so the admin UI knows what state the setting is in.
+  const all = await Settings.getAll(env);
+  const { rsvp_secret, ...safe } = all;
+  return json({
+    settings: safe,
+    rsvp_secret_set: Boolean(rsvp_secret && String(rsvp_secret).trim())
+  });
 }
 
 export async function update(env, request, user) {

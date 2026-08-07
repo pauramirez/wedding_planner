@@ -36,6 +36,9 @@ async function route(env, request) {
 
   if (path === "/api/health") return json({ ok: true, ts: new Date().toISOString() });
 
+  // RSVP lookup — public. Shared-QR flow: name + secret word → token (internal).
+  if (key === "POST /api/rsvp/lookup") return Rsvp.lookup(env, request);
+
   // RSVP — public, authenticated by the token in the URL.
   if (path.startsWith("/api/rsvp/")) {
     const token = path.slice("/api/rsvp/".length);

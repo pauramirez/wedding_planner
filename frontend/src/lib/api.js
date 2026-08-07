@@ -65,5 +65,6 @@ export const timeline = {
   remove: (id) => api.del(`/api/timeline/${id}`)
 };
 export const settings = {
+  list: () => api.get("/api/settings"),
   update: (patch) => api.patch("/api/settings", patch)
 };
