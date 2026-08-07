@@ -24,7 +24,12 @@ export async function update(env, request, user) {
     const before = await Settings.get(env, k);
     await Settings.set(env, k, String(v ?? ""), user.id);
     changes[k] = String(v ?? "");
-    await record(env, user, "update", "setting", null, before, { key: k, value: changes[k] });
+    // Audit: mask the RSVP secret value in the log — knowing it changed is
+    // useful; storing the plaintext in a public-readable audit table is not.
+    const auditAfter = k === "rsvp_secret" ? { key: k, value: "[redacted]" } : { key: k, value: changes[k] };
+    const auditBefore = k === "rsvp_secret" && before?.value ? { ...before, value: "[redacted]" } : before;
+    await record(env, user, "update", "setting", null, auditBefore, auditAfter);
   }
-  return json({ settings: await Settings.getAll(env) });
+  // Reuse list() so the response filters rsvp_secret out of the visible settings.
+  return list(env);
 }
