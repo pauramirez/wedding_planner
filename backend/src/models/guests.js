@@ -15,13 +15,23 @@ export async function findByToken(env, token) {
   return one(env, `SELECT ${GUEST_COLUMNS} FROM guests WHERE rsvp_token = ?`, [token]);
 }
 
-// Case-insensitive, whitespace-tolerant name lookup for the shared-QR flow.
+// Match user input tolerantly: case-, accent- and whitespace-insensitive.
+// Done in JS because D1 (SQLite) doesn't ship accent-folding collations.
+// Fine at wedding-list scale — a couple hundred rows at most.
+function normalizeName(s) {
+  return String(s || "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export async function findByName(env, name) {
-  return one(
-    env,
-    `SELECT ${GUEST_COLUMNS} FROM guests WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))`,
-    [name]
-  );
+  const target = normalizeName(name);
+  if (!target) return null;
+  const rows = await all(env, `SELECT ${GUEST_COLUMNS} FROM guests`);
+  return rows.find((r) => normalizeName(r.name) === target) || null;
 }
 
 export async function create(env, g) {
