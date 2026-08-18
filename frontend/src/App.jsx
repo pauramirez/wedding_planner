@@ -11,6 +11,7 @@ import VendorsPanel from "./panels/VendorsPanel.jsx";
 import GiftsPanel from "./panels/GiftsPanel.jsx";
 import PalettePanel from "./panels/PalettePanel.jsx";
 import TimelinePanel from "./panels/TimelinePanel.jsx";
+import NotesPanel from "./panels/NotesPanel.jsx";
 import BudgetPanel from "./panels/BudgetPanel.jsx";
 import Toolbar from "./components/Toolbar.jsx";
 
@@ -24,12 +25,13 @@ const TABS = [
   { id: "gifts", label: "Gifts" },
   { id: "colors", label: "Color Palette" },
   { id: "timeline", label: "Day-of Timeline" },
+  { id: "notes", label: "Notes" },
   { id: "budget", label: "Budget" }
 ];
 
 const EMPTY = {
   tasks: [], guests: [], vendors: [], gifts: [], palette: [],
-  timelineVan: [], timelineCol: [],
+  timelineVan: [], timelineCol: [], notes: [],
   weddingDates: { van: "", col: "" }
 };
 
@@ -62,6 +64,7 @@ function Planner() {
       palette: snap.palette || [],
       timelineVan: snap.timelineVan || [],
       timelineCol: snap.timelineCol || [],
+      notes: snap.notes || [],
       weddingDates: snap.weddingDates || { van: "", col: "" }
     });
   }, []);
@@ -80,6 +83,7 @@ function Planner() {
     gifts: <GiftsPanel gifts={data.gifts} onRefresh={refresh} />,
     colors: <PalettePanel palette={data.palette} onRefresh={refresh} />,
     timeline: <TimelinePanel timelineVan={data.timelineVan} timelineCol={data.timelineCol} onRefresh={refresh} />,
+    notes: <NotesPanel notes={data.notes} onRefresh={refresh} />,
     budget: <BudgetPanel data={data} />
   };
 

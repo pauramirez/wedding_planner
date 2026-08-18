@@ -10,16 +10,18 @@ import * as Vendors from "../models/vendors.js";
 import * as Gifts from "../models/gifts.js";
 import * as Palette from "../models/palette.js";
 import * as Timeline from "../models/timeline.js";
+import * as Notes from "../models/notes.js";
 import * as Settings from "../models/settings.js";
 
 export async function snapshot(env) {
-  const [tasks, guests, vendors, gifts, palette, tl, settings] = await Promise.all([
+  const [tasks, guests, vendors, gifts, palette, tl, notes, settings] = await Promise.all([
     Tasks.listAll(env),
     Guests.listAll(env),
     Vendors.listAll(env),
     Gifts.listAll(env),
     Palette.listAll(env),
     Timeline.listAll(env),
+    Notes.listAll(env),
     Settings.getAll(env)
   ]);
   return json({
@@ -30,6 +32,7 @@ export async function snapshot(env) {
     palette,
     timelineVan: tl.filter((t) => t.day === "van"),
     timelineCol: tl.filter((t) => t.day === "col"),
+    notes,
     weddingDates: {
       van: settings.wedding_date_van || "",
       col: settings.wedding_date_col || ""
@@ -75,6 +78,11 @@ export async function importSnapshot(env, request, user) {
     if (!item?.time || !item?.activity) continue;
     const row = await Timeline.create(env, { ...item, day: "col" });
     await record(env, user, "create", "timeline", row.id, null, row);
+  }
+  for (const n of data.notes || []) {
+    if (!n?.content || !n.content.trim()) continue;
+    const row = await Notes.create(env, { content: n.content.trim() });
+    await record(env, user, "create", "note", row.id, null, row);
   }
   if (data.weddingDates?.van !== undefined) {
     await Settings.set(env, "wedding_date_van", String(data.weddingDates.van || ""), user.id);
