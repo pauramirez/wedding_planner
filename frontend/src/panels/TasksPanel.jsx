@@ -38,15 +38,17 @@ export default function TasksPanel({ cat, title, dotClass, tasks, onRefresh }) {
         <input type="number" placeholder="Cost" value={cost} onChange={(e) => setCost(e.target.value)} min="0" />
         <button type="submit">+ Add</button>
       </form>
-      <table className="data-table">
-        <thead><tr>
-          <th style={{ width: 30 }}></th><th>Task</th><th>Owner</th><th>Due</th><th>Cost</th><th>Status</th><th>Notes</th><th></th>
-        </tr></thead>
-        <tbody>
-          {rows.length === 0 && <tr className="empty-row"><td colSpan={8}>No tasks yet</td></tr>}
-          {rows.map((t) => <TaskRow key={t.id} task={t} onRefresh={onRefresh} />)}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead><tr>
+            <th style={{ width: 30 }}></th><th>Task</th><th>Owner</th><th>Due</th><th>Cost</th><th>Status</th><th>Notes</th><th></th>
+          </tr></thead>
+          <tbody>
+            {rows.length === 0 && <tr className="empty-row"><td colSpan={8}>No tasks yet</td></tr>}
+            {rows.map((t) => <TaskRow key={t.id} task={t} onRefresh={onRefresh} />)}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
