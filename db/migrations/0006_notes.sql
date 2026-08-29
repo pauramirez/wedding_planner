@@ -1,4 +1,4 @@
--- 0005_notes.sql — freeform notes tab
+-- 0006_notes.sql — freeform notes tab
 
 CREATE TABLE notes (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
