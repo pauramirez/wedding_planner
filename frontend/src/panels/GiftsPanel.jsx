@@ -39,15 +39,17 @@ export default function GiftsPanel({ gifts, onRefresh }) {
         <input type="number" placeholder="Budget" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} min="0" />
         <button type="submit">+ Add gift</button>
       </form>
-      <table className="data-table">
-        <thead><tr>
-          <th>Recipient</th><th>Role</th><th>Gift idea</th><th>Budget</th><th>Status</th><th>Notes</th><th></th>
-        </tr></thead>
-        <tbody>
-          {gifts.length === 0 && <tr className="empty-row"><td colSpan={7}>No gifts planned yet — add your first above</td></tr>}
-          {gifts.map((g) => <GiftRow key={g.id} gift={g} onRefresh={onRefresh} />)}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead><tr>
+            <th>Recipient</th><th>Role</th><th>Gift idea</th><th>Budget</th><th>Status</th><th>Notes</th><th></th>
+          </tr></thead>
+          <tbody>
+            {gifts.length === 0 && <tr className="empty-row"><td colSpan={7}>No gifts planned yet — add your first above</td></tr>}
+            {gifts.map((g) => <GiftRow key={g.id} gift={g} onRefresh={onRefresh} />)}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

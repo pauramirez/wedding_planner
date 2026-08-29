@@ -10,6 +10,7 @@ import * as Vendors from "./routes/vendors.js";
 import * as Gifts from "./routes/gifts.js";
 import * as Palette from "./routes/palette.js";
 import * as Timeline from "./routes/timeline.js";
+import * as Notes from "./routes/notes.js";
 import * as Settings from "./routes/settings.js";
 import * as State from "./routes/state.js";
 import * as Activity from "./routes/activity.js";
@@ -111,6 +112,18 @@ async function route(env, request) {
   if (method === "DELETE" && path.startsWith("/api/timeline/")) {
     const id = idFromPath(path, "/api/timeline/");
     return id ? Timeline.remove(env, request, user, id) : error(400, "bad id");
+  }
+
+  // Notes
+  if (key === "GET /api/notes") return Notes.list(env);
+  if (key === "POST /api/notes") return Notes.create(env, request, user);
+  if (method === "PATCH" && path.startsWith("/api/notes/")) {
+    const id = idFromPath(path, "/api/notes/");
+    return id ? Notes.update(env, request, user, id) : error(400, "bad id");
+  }
+  if (method === "DELETE" && path.startsWith("/api/notes/")) {
+    const id = idFromPath(path, "/api/notes/");
+    return id ? Notes.remove(env, request, user, id) : error(400, "bad id");
   }
 
   // Settings

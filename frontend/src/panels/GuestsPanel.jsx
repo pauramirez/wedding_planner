@@ -60,15 +60,17 @@ export default function GuestsPanel({ guests, onRefresh }) {
         <input type="text" placeholder="Contact" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} />
         <button type="submit">+ Add guest</button>
       </form>
-      <table className="data-table">
-        <thead><tr>
-          <th>Name</th><th>Side</th><th>Event</th><th>Plus-one</th><th>Table</th><th>RSVP</th><th>Meal</th><th>Contact</th><th></th>
-        </tr></thead>
-        <tbody>
-          {guests.length === 0 && <tr className="empty-row"><td colSpan={9}>No guests yet — add your first above</td></tr>}
-          {guests.map((g) => <GuestRow key={g.id} guest={g} onRefresh={onRefresh} onShowQr={() => setQrGuest(g)} />)}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead><tr>
+            <th>Name</th><th>Side</th><th>Event</th><th>Plus-one</th><th>Table</th><th>RSVP</th><th>Meal</th><th>Contact</th><th></th>
+          </tr></thead>
+          <tbody>
+            {guests.length === 0 && <tr className="empty-row"><td colSpan={9}>No guests yet — add your first above</td></tr>}
+            {guests.map((g) => <GuestRow key={g.id} guest={g} onRefresh={onRefresh} onShowQr={() => setQrGuest(g)} />)}
+          </tbody>
+        </table>
+      </div>
       {qrGuest && <QrModal guest={qrGuest} onClose={() => setQrGuest(null)} />}
       {showMasterQr && <MasterQrModal onClose={() => setShowMasterQr(false)} />}
     </section>

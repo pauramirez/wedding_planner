@@ -41,15 +41,17 @@ export default function VendorsPanel({ vendors, onRefresh }) {
         <input type="number" placeholder="Quote/price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} min="0" />
         <button type="submit">+ Add vendor</button>
       </form>
-      <table className="data-table">
-        <thead><tr>
-          <th>Category</th><th>Vendor</th><th>Event</th><th>Contact</th><th>Price</th><th>Status</th><th>Notes</th><th></th>
-        </tr></thead>
-        <tbody>
-          {vendors.length === 0 && <tr className="empty-row"><td colSpan={8}>No vendors yet — add your first above</td></tr>}
-          {vendors.map((v) => <VendorRow key={v.id} vendor={v} onRefresh={onRefresh} />)}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead><tr>
+            <th>Category</th><th>Vendor</th><th>Event</th><th>Contact</th><th>Price</th><th>Status</th><th>Notes</th><th></th>
+          </tr></thead>
+          <tbody>
+            {vendors.length === 0 && <tr className="empty-row"><td colSpan={8}>No vendors yet — add your first above</td></tr>}
+            {vendors.map((v) => <VendorRow key={v.id} vendor={v} onRefresh={onRefresh} />)}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

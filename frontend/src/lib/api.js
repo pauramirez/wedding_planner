@@ -64,6 +64,11 @@ export const timeline = {
   create: (t) => api.post("/api/timeline", t),
   remove: (id) => api.del(`/api/timeline/${id}`)
 };
+export const notes = {
+  create: (n) => api.post("/api/notes", n),
+  update: (id, patch) => api.patch(`/api/notes/${id}`, patch),
+  remove: (id) => api.del(`/api/notes/${id}`)
+};
 export const settings = {
   list: () => api.get("/api/settings"),
   update: (patch) => api.patch("/api/settings", patch)
